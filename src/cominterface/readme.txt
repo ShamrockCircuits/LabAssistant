@@ -1,0 +1,1 @@
+Move the communication portion of device.py into here
