@@ -1,4 +1,5 @@
-from src import *
+from src.lab_assistant import *
+from src.enums.generic_enum import *
 from src.errors import *
 
 # My lab comms

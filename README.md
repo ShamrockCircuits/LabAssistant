@@ -12,6 +12,23 @@
   **Alternatives** <br/>
   Around the time I started working on this project (mid 2024) Google also realeased an internal tool they've been using for some time. I learned this a little too late though.
 
+## Future Work
+ - **Com Backend Rework** - Today users pass the resource string into LabAssistant but aren't given ANY flexibility for configuration of that resource. For example, RS232 isn't supported at the moment since it requires at minimum a baud rate. There's lots of options here, but whatever path I take it will have some impact on the high-level methods of LabAssistant (maybe I'll change the interface to take in an already established PyVisa device?)
+
+ - **Device Reconnect** - Over the past six months I've had two instances where devices seemingly disconnect causing the script to crash. To mitigate this I will be adding a reconnect() method. I sort of need to solidify the backend rework before I can implement this.
+
+ - **Test Cases** - I need to cleanup all the testcases that should be run on a device before it can be added to the repository. 
+
+ - **Add Device Types** - Currently Eload, DMM, and power supply classes essentially feature complete (always room for improvement!). I still need to flesh out my oscilloscope class and add a function generator class. What I'm struggling with is the sheer amount of configurability that comes with both these device types. I intend to add them, but for my first "release" I plan to keep focused the above 3 types. 
+
+- **Create Generic Tools** - I'd like atleast 1 "tool" to be included in my first "release". A tool being some task that can be accomplished with this library. The main tool I have in mind is a configurability efficiency plotter. This tool might look something like this
+  ```python
+  LabAssistant.EfficiencyPlot( 
+    Vin = {PSU, Ch1}, Iin = {DmmA}, 
+    Vo = {Eload, Ch1}, Iout = {DmmB},
+    filename = "ExamplePlotter.csv")
+  ```
+
 ## Example Usage
 ```python
 # Dumb example script to show how to interact with devices

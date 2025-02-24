@@ -20,7 +20,7 @@ TestDevice = {DeviceType.DMM, DeviceType.SCOPE, DeviceType.PSU, DeviceType.ELOAD
 # ============================= Oscilloscope =============================
 if DeviceType.SCOPE in TestDevice:
     print("\n\n============== Oscilloscope TEST ==============")
-    my_scope = LabAssistant.setup_scope(resource=f"TCPIP::{USER_Scope_ip}::INSTR", EnableDebug = True)
+    my_scope = LabAssistant.setup_scope(resource=f"TCPIP::{USER_Scope_ip}::INSTR")
 
     # Test Channel Toggles
     my_scope.enable_channels([Channel.CH1, Channel.CH2],    disable_unlisted = False)
