@@ -4,7 +4,7 @@ TODO - Copy from readme.md
 import os
 import importlib
 from typing import cast, Set
-from src.errors import DeviceInitializationError
+from src.util.errors import DeviceInitializationError
 from src.enums.generic_enum import ConnectionType, DeviceType
 from src.generic_device import DeviceConnection, GenericDevice
 from src.ABC.PSU import GenericPSU

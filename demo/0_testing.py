@@ -15,7 +15,7 @@ USER_Func_ip = "192.168.1.11"
 USER_Dmm_usb = "USB0::0xF4EC::0x1201::SDM35HBQ802019::INSTR"
 USER_Dmm_gpib = "GPIB0::1::INSTR"
 
-TestDevice = {DeviceType.DMM, DeviceType.SCOPE, DeviceType.PSU, DeviceType.ELOAD}
+TestDevice = {DeviceType.DMM}
 
 # ============================= Oscilloscope =============================
 if DeviceType.SCOPE in TestDevice:
@@ -23,9 +23,9 @@ if DeviceType.SCOPE in TestDevice:
     my_scope = LabAssistant.setup_scope(resource=f"TCPIP::{USER_Scope_ip}::INSTR")
 
     # Test Channel Toggles
-    my_scope.enable_channels([Channel.CH1, Channel.CH2],    disable_unlisted = False)
-    my_scope.enable_channels(Channel.CH1,                   disable_unlisted = True) # This should remove CH2-4
-    my_scope.disable_channels(Channel.CH1,                  enable_unlisted = True) # CH2-4 should be on
+    my_scope.enable_channels([Channel.CH1, Channel.CH2], disable_unlisted = False)
+    my_scope.enable_channels(Channel.CH1, disable_unlisted = True) # This should remove CH2-4
+    my_scope.disable_channels(Channel.CH1, enable_unlisted = True) # CH2-4 should be on
     my_scope.enable_channels([Channel.CH1, Channel.CH2, Channel.CH3, Channel.CH4])
 
     # Test offset

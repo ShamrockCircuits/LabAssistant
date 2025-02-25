@@ -3,3 +3,4 @@ build/
 
 # Testing script
 demo/scratch_pad.py
+*.log

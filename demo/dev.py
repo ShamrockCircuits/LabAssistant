@@ -1,5 +1,8 @@
 from src.lab_assistant import *
-from src.enum_types import *
+from src.enums.eload_enum import *
+from src.enums.generic_enum import *
+from src.enums.scope_enum import *
+
 # from DriversPy.SCOPE import 
 from src.ABC.ELOAD import EloadMode
 from typing import List

@@ -1,6 +1,6 @@
 from src.lab_assistant import *
 from src.enums.generic_enum import *
-from src.errors import *
+from src.util.errors import *
 
 # My lab comms
 USER_Scope_ip = "192.168.1.10"
