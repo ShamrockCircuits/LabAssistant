@@ -1,6 +1,7 @@
 """
 Keithley 2380 Electronic Load Driver
 """
+from time import sleep
 from src.ABC.DMM import GenericDMM
 from src.enums.generic_enum import Channel, DeviceType, MeasureType, DeviceInfo, ReadWrite
 from src.registry import DeviceRegistry
@@ -50,7 +51,7 @@ class FLUKE_8840A(GenericDMM):  # pylint: disable=invalid-name
         # Voltage
         if measure_type == MeasureType.VOLTAGE_AC:
             self.send_command("F2")
-        if measure_type == MeasureType.VOLTAGE:
+        elif measure_type == MeasureType.VOLTAGE:
             self.send_command("F1")
 
         # Current

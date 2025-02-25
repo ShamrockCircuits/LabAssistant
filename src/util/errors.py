@@ -41,3 +41,9 @@ class DeviceChannelError(LabAssistantError):
     def __init__(self, message="Channel does not exist on this device"):
         self.message = message
         super().__init__(self.message)
+    
+class UnsupportedMeasurementType(LabAssistantError):
+    """Raised when an unsupported measurement type is attempted."""
+    def __init__(self, message="Unsupported measurement type"):
+        self.message = message
+        super().__init__(self.message)

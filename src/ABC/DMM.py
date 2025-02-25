@@ -142,3 +142,58 @@ class GenericDMM(GenericDevice, ABC):
         Returns:
             MeasureType: The current measurement type the DMM is set to.
         '''
+
+   # ====================== Debugging Method ======================
+    @final
+    def test_all_methods(self) -> None:
+        '''
+        Test the DMM device. This method calls every method in the DMM class \n
+        and checks that it works as expected or prompts the user to check.\n
+        User must verify the printouts to determine pass/fail.
+        '''
+        print("\n======================== DMM Test Mode ========================\n"
+              f"{self.device_info.manufacturer} {self.device_info.model}\n"
+                " NOTE - There are two likely causes for issues\n"
+                " 1) The commands are being sent too quickly in this\n"
+                "    case you need to tweak the _operation_wait() method\n"
+                " 2) You are sending the wrong commands to the device.\n"
+                "    Verify the strings being sent to the device by enabling debug\n"
+                "===============================================================\n")
+
+        input("(1/4) - Device Reset           *enter*")
+        self.reset_device()
+        if self.get_mode() != MeasureType.VOLTAGE:
+            print("Error - Mode not set to Vdc after reset")
+
+        input("(2/4) - Set/Get Mode           *enter*")
+        for mode in MeasureType:
+            if mode == MeasureType.UNDEFINED:
+                continue
+
+            print(f"    Setting Mode: {mode} --> ", end="")
+            try:
+                self.set_mode(mode)
+                rd_mode = self.get_mode()
+                if rd_mode != mode:
+                    print(f" Error: Expected mode does not match observed {rd_mode}")
+                else:
+                    print("PASS")
+            except ValueError as e:
+                print(f" Error: {e}")
+
+        input("(3/4) - Measure                *enter*")
+        for mode in MeasureType:            
+            if mode == MeasureType.UNDEFINED:
+                continue            
+
+            input(f"    Measuring: {mode}           *enter to sample*")
+            try:
+                print(f"    Observed Value: {self.measure(mode)}")
+            except ValueError as e:
+                print(f">>> Error: {e}")
+
+        input("(4/4) - Get ID                 *enter*")
+        print(f"    Device ID: {self.get_id()}")
+
+        print("\n======================== DMM Test Complete ========================\n")
+        return None

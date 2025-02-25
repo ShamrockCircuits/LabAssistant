@@ -63,7 +63,7 @@ class SIGLENT_SDM3055(GenericDMM):  # pylint: disable=invalid-name
         # Voltage
         if measure_type == MeasureType.VOLTAGE_AC:
             self.send_command("CONF:VOLT:AC AUTO")
-        if measure_type == MeasureType.VOLTAGE:
+        elif measure_type == MeasureType.VOLTAGE:
             self.send_command("CONF:VOLT:DC AUTO")
 
         # Current
@@ -105,6 +105,8 @@ class SIGLENT_SDM3055(GenericDMM):  # pylint: disable=invalid-name
             mode = MeasureType.FREQUENCY
         elif "RES" in response:
             mode = MeasureType.RESISTANCE
+        elif "CAP" in response:
+            mode = MeasureType.CAPACITANCE
         
         return mode
         

@@ -12,8 +12,8 @@ from src.generic_device import DeviceConnection
     #
     # Errors & Warnings
     # Any unimplemented methods should raise a NotImplementedError if it is a safety concern.
-    # Else it should print a warning to the console using the _Warn_Unimplemented method.
-    # If you neglect to add support for any of the abstract methods, hit a keyerror in _dynamic_class_instantiate()
+    # Raise value errors when user tries to access unsupported features. (example invalid measure type)
+    # If you neglect to add support for any of the abstract methods, you will hit a keyerror in _dynamic_class_instantiate()
     #
     # Customizing This Driver
     # I've added notes throughout this class telling you where things need to be added

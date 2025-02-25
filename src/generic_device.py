@@ -10,7 +10,7 @@ import atexit
 from time import sleep, perf_counter
 from random import random
 
-from src.util.logging import logger
+# from src.util.logging import logger
 import pyvisa
 from src.util.errors import DeviceConnectionError, DeviceInitializationError, DeviceChannelError
 from src.enums.generic_enum import DeviceInfo, ReadWrite, Channel, ConnectionType, ConnectionInfo
