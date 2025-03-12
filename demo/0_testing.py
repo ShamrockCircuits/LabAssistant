@@ -15,7 +15,7 @@ USER_Func_ip = "192.168.1.11"
 USER_Dmm_usb = "USB0::0xF4EC::0x1201::SDM35HBQ802019::INSTR"
 USER_Dmm_gpib = "GPIB0::1::INSTR"
 
-TestDevice = {DeviceType.DMM}
+TestDevice = {DeviceType.PSU}
 
 # ============================= Oscilloscope =============================
 if DeviceType.SCOPE in TestDevice:
@@ -42,18 +42,20 @@ if DeviceType.SCOPE in TestDevice:
 
 if DeviceType.PSU in TestDevice:
     print("\n\n============== POWER SUPPLY TEST ==============")
-    my_PSU = LabAssistant.setup_psu(resource=f"TCPIP::{USER_PSU_ip}::INSTR", EnableDebug = True)
-    my_PSU.set_voltage(1.0, Channel.CH1)
-    my_PSU.set_current(1.0, Channel.CH1)
-    my_PSU.enable_output(Channel.CH1)  
-    my_PSU.disable_output(Channel.CH1)
+    my_PSU = LabAssistant.setup_psu(resource=f"TCPIP::{USER_PSU_ip}::INSTR", EnableDebug = False)
+    my_PSU.test_all_methods()
+    # my_PSU.set_voltage(1.0, Channel.CH1)
+    # my_PSU.set_current(1.0, Channel.CH1)
+    # my_PSU.enable_output(Channel.CH1)  
+    # my_PSU.disable_output(Channel.CH1)
 
     print("here")
 
 if DeviceType.ELOAD in TestDevice:
     print("\n\n============== ELOAD TEST ==============")
-    my_ELOAD = LabAssistant.setup_eload(resource=f"TCPIP::{USER_Eload_ip}::INSTR", EnableDebug = True)
+    my_ELOAD = LabAssistant.setup_eload(resource=f"TCPIP::{USER_Eload_ip}::INSTR", EnableDebug = False)
 
+    my_ELOAD.test_all_methods()
     # Test different modes
     my_ELOAD.set_load(EloadMode.CC, 1)
     my_ELOAD.set_load(EloadMode.CV, 1)
@@ -79,33 +81,33 @@ if DeviceType.ELOAD in TestDevice:
 if DeviceType.DMM in TestDevice:
     print("\n\n============== DMM TEST ==============")
     # my_DMM_usb = LabAssistant.setup_dmm(resource=USER_Dmm_usb, connection_type = ConnectionType.RAW, EnableDebug = True)
-    my_DMM = LabAssistant.setup_dmm(resource=USER_Dmm_gpib, EnableDebug = True)
+    # my_DMM = LabAssistant.setup_dmm(resource=USER_Dmm_gpib, EnableDebug = False)
+    my_other_DMM = LabAssistant.setup_dmm(resource=USER_Dmm_usb, EnableDebug = False)
+    my_other_DMM.test_all_methods()
+    # print("Reset Device")
+    # my_DMM.reset_device()
 
-    print("Reset Device")
-    my_DMM.reset_device()
+    # print("USB DMM...")
+    # my_DMM.set_mode(MeasureType.VOLTAGE)
+    # observed = my_DMM.get_mode()
+    # print("\nSet Mode - Voltage DC", end="")
+    # print(f" ---> Observed {observed}")
+    # print( f"DC Votlage --> {my_DMM.measure(MeasureType.VOLTAGE)}" )
 
-    print("USB DMM...")
-    my_DMM.set_mode(MeasureType.VOLTAGE)
-    observed = my_DMM.get_mode()
-    print("\nSet Mode - Voltage DC", end="")
-    print(f" ---> Observed {observed}")
-    print( f"DC Votlage --> {my_DMM.measure(MeasureType.VOLTAGE)}" )
+    # my_DMM.set_mode(MeasureType.CURRENT)
+    # observed = my_DMM.get_mode()
+    # print("\nSet Mode - Current DC", end="")
+    # print(f" ---> Observed {observed}")
+    # print( f"DC Current --> {my_DMM.measure(MeasureType.CURRENT)}" )
 
-    my_DMM.set_mode(MeasureType.CURRENT)
-    observed = my_DMM.get_mode()
-    print("\nSet Mode - Current DC", end="")
-    print(f" ---> Observed {observed}")
-    print( f"DC Current --> {my_DMM.measure(MeasureType.CURRENT)}" )
-
-    my_DMM.set_mode(MeasureType.RESISTANCE)
-    observed = my_DMM.get_mode()
-    print("\nSet Mode - Resistance", end="")
-    print(f" ---> Observed {observed}")
-    print( f"Resistance --> {my_DMM.measure(MeasureType.RESISTANCE)}" )
+    # my_DMM.set_mode(MeasureType.RESISTANCE)
+    # observed = my_DMM.get_mode()
+    # print("\nSet Mode - Resistance", end="")
+    # print(f" ---> Observed {observed}")
+    # print( f"Resistance --> {my_DMM.measure(MeasureType.RESISTANCE)}" )
 
     # my_DMM.set_mode(MeasureType.FREQUENCY)
     # observed = my_DMM.get_mode()
     # print("\nSet Mode - Frequency", end="")
     # print(f" ---> Observed {observed}")
     # print( f"Frequency ---> {my_DMM.measure(MeasureType.FREQUENCY)}" )
-    

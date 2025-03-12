@@ -362,3 +362,54 @@ class GenericEload(GenericDevice, ABC):
         
    # ============================ Protection =============================
     # Add protection-related methods here if needed in the future.
+
+   # ========================= Debugging Method ==========================
+    @final
+    def _test_all_methods(self) -> None:
+        
+        input("(1/5) - Device Reset           *enter*")
+        self.reset_device()
+        for ch in self.device_info.available_channels:
+            if self.get_output_state(ch) != State.OFF:
+                raise ValueError(">>> Error - Output not disabled after reset")
+        if self.get_mode() != EloadMode.CR:
+            print(">>> Error - Mode not set to CR after reset")        
+
+        input("(2/5) - Set/Get Mode           *enter*")
+        for mode in EloadMode:
+            if mode == EloadMode.UNDEFINED:
+                continue
+            print(f"    Setting Mode: {mode} --> ", end="")
+            try:
+                self.set_mode(mode)
+                rd_mode = self.get_mode()
+                if rd_mode != mode:
+                    print(f" Error: Expected mode does not match observed {rd_mode}")
+                else:
+                    print("PASS")
+            except ValueError as e:
+                print(f" Error: {e}")
+
+        input("(3/5) - Measure              *enter*")
+        for mmode in MeasureType:
+            if mmode == MeasureType.UNDEFINED:
+                continue
+            print(f"    Measuring: {mmode} --> ", end="")
+            try:
+                result = self.measure(mmode)
+                print(f"Observed {result}")
+            except ValueError as e:
+                print(f" Unsupported: {e}")
+        
+        input("(4/5) - Toggle Outputs       *enter*")
+        for ch in self.device_info.available_channels:
+            for state in {State.ON, State.OFF}:
+                print(f"    Setting Output: {state} --> ", end="")
+                self.set_output_state(state, ch)
+                rd_state = self.get_output_state(ch)
+                if rd_state != state:
+                    print(f" Error: Expected state does not match observed {rd_state}")
+                else:
+                    print("PASS")
+        input("(5/5) - Get ID                 *enter*")
+        print(f"    Device ID: {self.get_id()}")

@@ -468,7 +468,7 @@ class GenericDevice(ABC):
         Parameters:
             method_name (str): The name of the unimplemented method.
         """
-        warn(f"The method '{method_name}' is not implemented for the device -> "+ self.device_info.manufacturer + self.device_info.model, UserWarning)
+        print(f">>> Warning: The method '{method_name}' is not implemented for the device -> {self.device_info.manufacturer} {self.device_info.model}")
     
     def _error_unimplemented(self, method_name: str, comment : str):
         """
@@ -544,6 +544,36 @@ class GenericDevice(ABC):
         This doesn't rely on the user to remember to set the flag, and it's less code to write.
         '''
         return None
+
+    @final
+    def test_all_methods(self) ->None:
+        '''
+        This method calls every method in the device class and automatically.\n
+        checks that it works when possible. User must verify the printouts to determine pass/fail.\n
+        '''
+        print("\n======================== Test Mode ========================\n"
+               f" {self.device_info.device_type.name} --> {self.device_info.manufacturer} {self.device_info.model}\n"
+                " NOTE - There are two likely causes for issues\n"
+                " 1) The commands are being sent too quickly. In this\n"
+                "    case you need to tweak the _operation_wait() method\n"
+                " 2) You are sending the wrong commands to the device.\n"
+                "    Verify the strings being sent to the device by enabling debug.\n"
+                "    Try using the send_command() method directly, or use NI MAX.\n"
+                "===============================================================\n"
+                " Disconnect all devices from DUT before starting test\n"
+                "===============================================================\n")
+        input("Press Enter to continue...")
+        self._test_all_methods()
+        print("\n======================== Test Complete ========================\n")
+
+    @abstractmethod
+    def _test_all_methods(self) -> None:
+        '''
+        This method calls every method in the device class and automatically.\n
+        checks that it works when possible. User must verify the printouts to determine pass/fail.\n
+        '''
+        return None      
+
 
     @staticmethod
     def _safe_string_to_float(input_str:str) -> list[float]:

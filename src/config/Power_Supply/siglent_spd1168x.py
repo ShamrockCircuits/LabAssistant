@@ -56,21 +56,14 @@ class SIGLENT_SPD1168X(GenericPSU): # pylint: disable=invalid-name
         return None
 
     def _get_output_state(self, channel: Channel = Channel.CH1) -> State:
-        str_cmd = f"OUTP? CH{channel.value}"
-        response = self.send_command(str_cmd, ReadWrite.READ)
+        str_cmd = "SYST:STAT?"
+        bin_response = format(int(self.send_command(str_cmd, ReadWrite.READ), 16), 'b').zfill(8)
 
-        # check if rsponse includes "ON"
-        state = State.UNDEFINED
-        if State.ON.value in response:
-            state = State.ON
-        elif State.OFF.value in response:
-            state= State.OFF
-        
-        # It could be a safety concern if we incorrectly parse this
-        if state == State.UNDEFINED:
-            raise ValueError(f"Failed to parse response from get_output_state(). Response <{response}>.")
-        
-        return state
+        # Bit 4 is the output state, LSB first so [3]
+        if bin_response[3] == '1':
+            return State.ON
+        else:
+            return State.OFF
         
    # ================= Output Setup Methods =================
     def _set_current(self, current: float, channel: Channel = Channel.CH1) -> None:

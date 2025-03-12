@@ -127,7 +127,7 @@ class GenericPSU(GenericDevice, ABC):
             state: OutputState - ON enables the output, OFF disables the output
         '''
         self._check_channel_exists(channel)
-        if state.ON:
+        if state is state.ON:
             self._enable_output(channel)
         else:
             self._disable_output(channel)
@@ -359,3 +359,71 @@ class GenericPSU(GenericDevice, ABC):
             channel: Channel - The channel to be targeted. Defaults to Channel.CH1.
             current: float - The current to set in Amps
         '''
+
+   # ========================= Debugging Method ==========================
+    @final #TODO - Not done yet
+    def _test_all_methods(self) -> None:
+        from time import sleep
+        err_flag = False
+
+        input("(1/8) - Device Reset             *enter*")
+        self.reset_device() # Not checking OVP, OCP, or Remote Sense
+        for ch in self.device_info.available_channels:
+            if self.get_voltage(ch) != 0 or self.get_current(ch) != 0 or self.get_output_state(ch) != State.OFF:
+                print(f">>> Error - {ch} was not reset correctly.")
+                err_flag = True
+        if not err_flag:
+            print(">>> PASS")
+        err_flag = False
+
+        input("(2/8) - Set/Get V & I            *enter*")
+        for ch in self.device_info.available_channels:
+            self.set_voltage(1, ch)
+            self.set_current(0.1, ch)
+            if self.get_voltage(ch) != 1:
+                print(f">>> Error - V on {ch} did not set correctly.")
+                err_flag = True
+            if self.get_current(ch) != 0.1:
+                print(f">>> Error - I on {ch} did not set correctly.")
+                err_flag = True
+        if not err_flag:
+            print(">>> PASS")
+        err_flag = False
+
+        input("(3/8) - Toggle Output            *enter*")
+        for ch in self.device_info.available_channels:
+            for state in [State.ON, State.OFF]:
+                self.set_output_state(state, ch)
+                if self.get_output_state(ch) != state:
+                    print(f">>> Error - Output state on {ch} did not set correctly")
+                    err_flag = True
+        if not err_flag:
+            print(">>> PASS")
+
+        input("(4/8) - Measure                  *enter*")
+        for ch in self.device_info.available_channels:
+            self.enable_output(ch)
+            sleep(0.5)
+            print(f"Channel --> {ch.value}")
+            print(f"Voltage: {self.measure(MeasureType.VOLTAGE)}V")
+            print(f"Current: {self.measure(MeasureType.CURRENT)}A")
+            
+        input("(5/8) Remote Sense                 *enter*")
+        for ch in self.device_info.available_channels:
+            for state in [State.ON, State.OFF]:
+                self.set_remote_sense(ch, state)
+                input(f"Verify {ch} remote sense is {state}...   *enter*")
+
+        input("(6/8) - OVP Test                 *enter*")
+        for ch in self.device_info.available_channels:
+            self.set_ovp(10, ch)
+            input(f"Verify {ch} OVP is set to 10V...   *enter*")
+
+        input("(7/8) - OCP Test                 *enter*")
+        for ch in self.device_info.available_channels:
+            self.set_ocp(1, ch)
+            input(f"Verify {ch} OCP is set to 1A...   *enter*")
+
+        input("(8/8) - Get ID                 *enter*")
+        print(f"    Device ID: {self.get_id()}")
+        return None

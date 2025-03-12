@@ -29,7 +29,7 @@ class GenericDMM(GenericDevice, ABC):
         Parameters:
             deviceconnection (DeviceConnection): The connection object for the device.
         """
-        print("Initializing DMM --> {self.device_info.manufacturer}_{self.device_info.model}")
+        print(f"Initializing DMM --> {self.device_info.manufacturer}_{self.device_info.model}")
         super().__init__(deviceconnection)
 
         # Stores the current state of the DMM
@@ -145,25 +145,13 @@ class GenericDMM(GenericDevice, ABC):
 
    # ====================== Debugging Method ======================
     @final
-    def test_all_methods(self) -> None:
-        '''
-        Test the DMM device. This method calls every method in the DMM class \n
-        and checks that it works as expected or prompts the user to check.\n
-        User must verify the printouts to determine pass/fail.
-        '''
-        print("\n======================== DMM Test Mode ========================\n"
-              f"{self.device_info.manufacturer} {self.device_info.model}\n"
-                " NOTE - There are two likely causes for issues\n"
-                " 1) The commands are being sent too quickly in this\n"
-                "    case you need to tweak the _operation_wait() method\n"
-                " 2) You are sending the wrong commands to the device.\n"
-                "    Verify the strings being sent to the device by enabling debug\n"
-                "===============================================================\n")
-
+    def _test_all_methods(self) -> None:
         input("(1/4) - Device Reset           *enter*")
         self.reset_device()
-        if self.get_mode() != MeasureType.VOLTAGE:
-            print("Error - Mode not set to Vdc after reset")
+        if self.get_mode() == MeasureType.VOLTAGE:
+            print(">>> PASS")
+        else:
+            print(">>> Error - Mode not set to Vdc after reset")
 
         input("(2/4) - Set/Get Mode           *enter*")
         for mode in MeasureType:
@@ -175,11 +163,11 @@ class GenericDMM(GenericDevice, ABC):
                 self.set_mode(mode)
                 rd_mode = self.get_mode()
                 if rd_mode != mode:
-                    print(f" Error: Expected mode does not match observed {rd_mode}")
+                    print(f">>> Error: Expected mode does not match observed {rd_mode}")
                 else:
-                    print("PASS")
+                    print(">>> PASS")
             except ValueError as e:
-                print(f" Error: {e}")
+                print(f">>> Error: {e}")
 
         input("(3/4) - Measure                *enter*")
         for mode in MeasureType:            

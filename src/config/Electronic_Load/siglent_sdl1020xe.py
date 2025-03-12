@@ -32,7 +32,10 @@ class SIGLENT_SDL1020XE(GenericEload):  # pylint: disable=invalid-name
         Reset device back to factory default.
         According to siglent datasheet "Rstore the equipment state to be initial state".
         """
-        self.send_command("*RST", ReadWrite.WRITE)
+        # Although this command is documented my device will not acknowledge it...
+        # Removing for now
+
+        # self.send_command("*RST", ReadWrite.WRITE)
         return None
     
     def _operation_wait(self):
