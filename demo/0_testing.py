@@ -43,13 +43,16 @@ if DeviceType.SCOPE in TestDevice:
 if DeviceType.PSU in TestDevice:
     print("\n\n============== POWER SUPPLY TEST ==============")
     my_PSU = LabAssistant.setup_psu(resource=f"TCPIP::{USER_PSU_ip}::INSTR", EnableDebug = False)
-    my_PSU.test_all_methods()
+    my_PSU.cleanup()
+    my_PSU.cleanup()
+
+    # my_PSU.test_all_methods()
     # my_PSU.set_voltage(1.0, Channel.CH1)
     # my_PSU.set_current(1.0, Channel.CH1)
     # my_PSU.enable_output(Channel.CH1)  
     # my_PSU.disable_output(Channel.CH1)
 
-    print("here")
+    # print("here")
 
 if DeviceType.ELOAD in TestDevice:
     print("\n\n============== ELOAD TEST ==============")
