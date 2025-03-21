@@ -383,17 +383,26 @@ class GenericDevice(ABC):
     def cleanup(self) -> None:
         '''
         Closes visa device connection if it exists.
-        Class child class _cleanup method to ensure it ends in a safe sta
-        TODO - add atexit to method
+        Class child class _cleanup method to ensure it ends in a safe state.
         '''
-        print(f"Cleanup Device --> {self.device_info.manufacturer} {self.device_info.model}")
 
-        # First cleanup device
-        self._cleanup()
+        # We will not cleanup simulated devices...
+        # Furthermore, we will not cleanup devices that are already closed.
 
-        # Then close the connection
+        # Confirm the user hasn't preemtively closed the device
+
+
+        # Cleanup and close device
         if self.device_connection._visa_device is not None:
-            self.device_connection._visa_device.close()
+
+            try:
+                self._cleanup()
+                self.device_connection._visa_device.close()
+                print(f"Cleanup Device --> {self.device_info.manufacturer} {self.device_info.model}")
+            
+            # Device already cleaned by user
+            except pyvisa.errors.InvalidSession:
+                pass
 
     @abstractmethod
     def _cleanup(self) -> None:
