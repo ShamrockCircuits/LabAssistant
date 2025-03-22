@@ -3,7 +3,7 @@ TODO - Copy from readme.md
 """
 from typing import final
 from abc import ABC, abstractmethod
-from src.util.errors import UnimplementedSafetyCriticalMethod
+from src.util.errors import UnimplementedSafetyCriticalMethod, UnimplementedOptionalMethod
 from src.generic_device import GenericDevice, DeviceConnection
 from src.enums.generic_enum import Channel, State, MeasureType
 
@@ -49,29 +49,26 @@ class GenericPSU(GenericDevice, ABC):
         Reset device back to factory default, typically calling *RST.\n
         Also does the following to all channels...
         1) Disables output
-        2) Sets OVP to 50V
-        3) Sets OCP to 5A
-        4) Sets V to 0V
-        5) Sets I to 0A
-        6) Disable remote sense
+        2) Sets V to 0V
+        3) Sets I to 0A
+        4) Calls child child method _reset_device()
         '''
-        self._reset_device()
         for ch in self.device_info.available_channels:
             self.disable_output(ch)
-            self.set_ovp(50, ch)
-            self.set_ocp(5, ch)
             self.set_voltage(0, ch)
             self.set_current(0, ch)
-            self.set_remote_sense(ch, State.OFF)
-        return None
+        
+        self._reset_device()
 
-    @abstractmethod
     def _reset_device(self) -> None:
         '''
-        Send the RESET command to the device. Typically "*RST".\n
-        What this does typically depeneds on the manufacturer. \n
-        Method called by public method reset_device().
+        Reset device back to factory default, typically calling *RST.\n
+        Also does the following to all channels...
+        1) Disables output
+        2) Sets V to 0V
+        3) Sets I to 0A
         '''
+        return None
 
     # ================= Toggle Output Methods ================= 
     @final
@@ -289,7 +286,8 @@ class GenericPSU(GenericDevice, ABC):
         Raises:
             UnimplementedOptionalMethod: If this device is not implemented
         '''
-        self._warn_unimplemented("set_remote_sense()")
+        # self._warn_unimplemented("set_remote_sense()")
+        self._raise_warning(UnimplementedOptionalMethod("_set_remote_sense()"))
 
     # ======================== Measure ======================== 
     @final
@@ -360,7 +358,7 @@ class GenericPSU(GenericDevice, ABC):
             UnimplementedSafetyCriticalMethod: If the set_ovp value is >50V
             UnimplementedOptionalMethod: If this device is not implemented
         '''
-        self._warn_unimplemented("set_ovp()")
+        self._raise_warning(UnimplementedOptionalMethod("_set_ovp()"))
 
         if voltage > 50:
             raise UnimplementedSafetyCriticalMethod("set_ovp()")
@@ -420,7 +418,7 @@ class GenericPSU(GenericDevice, ABC):
             play pattycake with the wires at high voltage and an OCP of 10mA
             NOTE - As always only trained professionals should be working on such systems
         '''
-        self._warn_unimplemented("set_ocp()")
+        self._raise_warning(UnimplementedOptionalMethod("_set_ovp()"))
 
         if current > 0.01:
             raise UnimplementedSafetyCriticalMethod("set_ocp()")

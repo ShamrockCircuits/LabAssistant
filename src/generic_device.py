@@ -12,7 +12,7 @@ from random import random
 
 # from src.util.logging import logger
 import pyvisa
-from src.util.errors import DeviceConnectionError, DeviceInitializationError, DeviceChannelError, UnimplementedOptionalMethod
+from src.util.errors import DeviceConnectionError, DeviceInitializationError, DeviceChannelError, LabAssistantWarning
 from src.enums.generic_enum import DeviceInfo, ReadWrite, Channel, ConnectionType, ConnectionInfo
 from src.registry import DeviceRegistry
 
@@ -470,16 +470,13 @@ class GenericDevice(ABC):
         return self.send_command(str_cmd, ReadWrite.READ)
 
     # Protected Methods
-    def _warn_unimplemented(self, method_name: str):
-        """
-        Warn the user that a method is not implemented.
-
-        Parameters:
-            method_name (str): The name of the unimplemented method.
-        """
-        # print(f">>> Warning: The method '{method_name}' is not implemented for the device -> {self.device_info.manufacturer} {self.device_info.model}")
-        warn(UnimplementedOptionalMethod(method_name))
-
+    def _raise_warning(self, lab_assistant_warning: LabAssistantWarning):
+        '''
+        New and improved version of _warn_uimplemented...
+        testing now
+        '''
+        warning_class = type(lab_assistant_warning).__name__
+        print(f"Warning: {warning_class} -> {lab_assistant_warning.message}")
 
     def _error_unimplemented(self, method_name: str, comment : str):
         """

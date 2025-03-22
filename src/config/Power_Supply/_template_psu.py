@@ -3,6 +3,7 @@
 """
 from src.ABC.PSU import GenericPSU
 from src.enums.generic_enum import Channel, DeviceType, MeasureType, State, ReadWrite, DeviceInfo
+from src.util.errors import UnimplementedOptionalMethod
 from src.registry import DeviceRegistry
 from src.generic_device import DeviceConnection
 
@@ -48,7 +49,7 @@ class TEMPLATE_PSU(GenericPSU): # pylint: disable=invalid-name
     
     def _reset_device(self) -> None:
         # ============================
-        # (optional) Your Code here!!!
+        # (optional) Your Code here, remove if unused!!!
         # ============================
         self.send_command("<Paste Command Here>")
         return None
@@ -58,7 +59,7 @@ class TEMPLATE_PSU(GenericPSU): # pylint: disable=invalid-name
         # You must provide some mechanism to control the code execution.
         # See the inherited docstring for details... 
         # =======================================================
-        #self._warn_unimplemented("Warning -> Missing OPC on this device!!! Beware of stability issues.")
+        self._raise_warning(UnimplementedOptionalMethod("_operation_wait()"))
         self.send_command("<Paste Command Here>", ReadWrite.READ, skip_opc=True)
         return None        
 
@@ -103,11 +104,9 @@ class TEMPLATE_PSU(GenericPSU): # pylint: disable=invalid-name
     def _get_voltage(self, channel: Channel = Channel.CH1) -> float:
         response = self.send_command("<Paste Command Here>")    # ======== TODO ========
         return self._safe_string_to_float(response)[0]
-
-    def _set_remote_sense(self, channel: Channel = Channel.CH1, state: State = State.ON) -> None:
-        self._warn_unimplemented("Set_Remote_Sense()")          # ======== TODO ========
-        return None
    
+    # def _set_remote_sense(self, channel, state) -> None:      # Optional Method
+
    # ============================ Measurement =============================
     def _measure(self, measure_type: MeasureType, channel: Channel = Channel.CH1) -> float:
 
@@ -126,11 +125,7 @@ class TEMPLATE_PSU(GenericPSU): # pylint: disable=invalid-name
         return self._safe_string_to_float(response)[0]
     
    # ============================ Protection =============================
-    def _set_ovp(self, voltage: float, channel: Channel) -> None:
-        self._warn_unimplemented("<Paste warning Here>")    # ======== TODO ========
-        return 
-
-    def _set_ocp(self, current: float, channel: Channel) -> None:
-        self._warn_unimplemented("<Paste warning Here>")    # ======== TODO ========
+    # def _set_ovp(self, voltage: float, channel: Channel) -> None:     # Optional Method
+    # def _set_ocp(self, current: float, channel: Channel) -> None:     # Optional Method
 
 DeviceRegistry.add_class(TEMPLATE_PSU) # TODO - Do not forget this!!!

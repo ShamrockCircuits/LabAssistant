@@ -41,10 +41,8 @@ class MAGNAPOWER_SL1000(GenericPSU): # pylint: disable=invalid-name
     
     def _reset_device(self) -> None:
         # Set everything to a safe level
-        self.disable_output()
-        self.set_voltage(0.0)
-        self.set_current(0.0)
         self.set_ovp(50)
+        self.set_ocp(0.1)
 
         # Disable auto sequence mode
         self.send_command("OUTP:ARM 0")

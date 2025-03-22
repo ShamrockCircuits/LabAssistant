@@ -1,15 +1,18 @@
-import warnings
-
 class LabAssistantError(Exception):
     """Base class for all exceptions in LabAssistant."""
 
-class LabAssistantWarning(Warning):
+class LabAssistantWarning(Exception):
     """Base class for all warnings in LabAssistant."""
+    # Trying to avoid using the warnings module here...
+    def __init__(self, message):
+        self.message = message
+        super().__init__(self.message)
 
 # =================== Warning Classes ======================
 class UnimplementedOptionalMethod(LabAssistantWarning):
     """Warning raised when an optional method is not implemented."""
-    def __init__(self, method_name, message="Optional method {method_name} not supported"):
+    txt_used_for_filter = "optional_method"
+    def __init__(self, method_name, message=f"{txt_used_for_filter} not supported."):
         self.method_name = method_name
         self.message = f"{message}: {method_name}"
         super().__init__(self.message)

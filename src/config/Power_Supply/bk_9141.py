@@ -33,6 +33,8 @@ class BK_9141(GenericPSU): # pylint: disable=invalid-name
         """
         Reset the device to its default state.
         """
+        # Unclear what is and isn't affected by this command
+        # Device needs to be run through test suite
         self.send_command("*RST", ReadWrite.WRITE)
         return None
 

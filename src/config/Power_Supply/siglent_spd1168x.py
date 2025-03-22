@@ -23,15 +23,6 @@ class SIGLENT_SPD1168X(GenericPSU): # pylint: disable=invalid-name
    # =================== Initialization ===================
     def __init__(self, deviceconnection : DeviceConnection):
         super().__init__(deviceconnection)
-   
-    def _reset_device(self) -> None:
-        # There is no reset command for this device, so I'll make one
-        for channel in self.device_info.available_channels:
-            self.enable_output(channel)
-            self.set_voltage(0.0, channel)
-            self.set_current(0.0, channel)
-        
-        return None
 
     def _operation_wait(self) -> None:
         '''
@@ -85,7 +76,7 @@ class SIGLENT_SPD1168X(GenericPSU): # pylint: disable=invalid-name
         str_cmd = f"CH{channel.value}:VOLT?"
         response = self.send_command(str_cmd, ReadWrite.READ)
         return self._safe_string_to_float(response)[0]
-   
+
    # ================= Measure Methods =================
     def _measure(self, measure_type: MeasureType, channel: Channel = Channel.CH1) -> float:
         '''
