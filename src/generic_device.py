@@ -12,7 +12,7 @@ from random import random
 
 # from src.util.logging import logger
 import pyvisa
-from src.util.errors import DeviceConnectionError, DeviceInitializationError, DeviceChannelError
+from src.util.errors import DeviceConnectionError, DeviceInitializationError, DeviceChannelError, UnimplementedOptionalMethod
 from src.enums.generic_enum import DeviceInfo, ReadWrite, Channel, ConnectionType, ConnectionInfo
 from src.registry import DeviceRegistry
 
@@ -477,8 +477,10 @@ class GenericDevice(ABC):
         Parameters:
             method_name (str): The name of the unimplemented method.
         """
-        print(f">>> Warning: The method '{method_name}' is not implemented for the device -> {self.device_info.manufacturer} {self.device_info.model}")
-    
+        # print(f">>> Warning: The method '{method_name}' is not implemented for the device -> {self.device_info.manufacturer} {self.device_info.model}")
+        warn(UnimplementedOptionalMethod(method_name))
+
+
     def _error_unimplemented(self, method_name: str, comment : str):
         """
         Warn the user that a method is not implemented. Call this if the missing implemenation is deamed safety critical.

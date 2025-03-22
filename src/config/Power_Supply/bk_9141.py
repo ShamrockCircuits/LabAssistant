@@ -184,12 +184,7 @@ class BK_9141(GenericPSU): # pylint: disable=invalid-name
         return self._safe_string_to_float(response)[0]
 
    # =================== Protection ====================
-    def _set_ovp(self, voltage: float, channel: Channel) -> None:
-        self._warn_unimplemented("Set_OVP()")
-        return 
-
-    def _set_ocp(self, current: float, channel: Channel) -> None:
-        self._warn_unimplemented("Set_OCP()")
+    # Neither ocp or ovp are supported by this device
 
    # ================= New Class Specific Private Methods =================
     def _select_channel(self, channel: Channel = Channel.CH1) -> None:

@@ -3,6 +3,7 @@ TODO - Copy from readme.md
 """
 from typing import final
 from abc import ABC, abstractmethod
+from src.util.errors import UnimplementedSafetyCriticalMethod
 from src.generic_device import GenericDevice, DeviceConnection
 from src.enums.generic_enum import Channel, State, MeasureType
 
@@ -260,23 +261,35 @@ class GenericPSU(GenericDevice, ABC):
         '''
         Enable or disable remote sensing on the PSU on the specified channel.
 
+        If your device dos not support this method, do not overwrite the _set_remote_sense() method.\n
+        In this case the default implementation will raise an UnimplementedOptionalMethod warning.\n
+
         Parameters:
             channel: Channel - The channel to be targeted. Defaults to Channel.CH1.
             state: OutputState - ON enables remote sensing, OFF disables remote sensing
+        
+        Raises:
+            UnimplementedOptionalMethod: If this device is not implemented
         '''
         self._check_channel_exists(channel)
         self._set_remote_sense(channel, state)
         return None
 
-    @abstractmethod
     def _set_remote_sense(self, channel: Channel, state: State) -> None:
         '''
         Enable or disable remote sensing on the PSU on the specified channel.
 
+        If your device dos not support this method, do not overwrite the _set_remote_sense() method.\n
+        In this case the default implementation will raise an UnimplementedOptionalMethod warning.\n
+
         Parameters:
             channel: Channel - The channel to be targeted. Defaults to Channel.CH1.
             state: OutputState - ON enables remote sensing, OFF disables remote sensing
+        
+        Raises:
+            UnimplementedOptionalMethod: If this device is not implemented
         '''
+        self._warn_unimplemented("set_remote_sense()")
 
     # ======================== Measure ======================== 
     @final
@@ -314,51 +327,103 @@ class GenericPSU(GenericDevice, ABC):
     def set_ovp(self, voltage: float, channel: Channel = Channel.CH1) -> None:
         '''
         Set the over voltage protection of the PSU on the specified channel.\n
-        NOTE - Many devices do not support this method.
+
+        If your device dos not support this method, do not overwrite the _set_ovp() method.\n
+        In this case the default implementation will raise an UnimplementedOptionalMethod warning.\n
+        If the set_ovp value is >50V, the method will also raise a UnsupportedSafetyCriticalMethod error.\n
 
         Parameters:
             channel: Channel - The channel to be targeted. Defaults to Channel.CH1.
             voltage: float - The voltage to set in Volts
+        
+        Raises:
+            UnimplementedSafetyCriticalMethod: If the set_ovp value is >50V
+            UnimplementedOptionalMethod: If this device is not implemented
         '''
         self._check_channel_exists(channel)
         self._set_ovp(voltage, channel)
         return None
 
-    @abstractmethod
     def _set_ovp(self, voltage: float, channel: Channel) -> None:
         '''
         Set the over voltage protection of the PSU on the specified channel.\n
-        NOTE - Many devices do not support this method.
+
+        If your device dos not support this method, do not overwrite the _set_ovp() method.\n
+        In this case the default implementation will raise an UnimplementedOptionalMethod warning.\n
+        If the set_ovp value is >50V, the method will also raise a UnsupportedSafetyCriticalMethod error.\n
 
         Parameters:
             channel: Channel - The channel to be targeted. Defaults to Channel.CH1.
             voltage: float - The voltage to set in Volts
+        
+        Raises:
+            UnimplementedSafetyCriticalMethod: If the set_ovp value is >50V
+            UnimplementedOptionalMethod: If this device is not implemented
         '''
+        self._warn_unimplemented("set_ovp()")
+
+        if voltage > 50:
+            raise UnimplementedSafetyCriticalMethod("set_ovp()")
 
     @final
     def set_ocp(self, current: float, channel: Channel = Channel.CH1) -> None:
         '''
-        Set the over current protection of the PSU on the specified channel.
-        NOTE - Many devices do not support this method.
+        Set the over current protection of the PSU on the specified channel.\n
+
+        If your device dos not support this method, do not overwrite the _set_ocp() method.\n
+        In this case the default implementation will raise an UnimplementedOptionalMethod warning.\n
 
         Parameters:
             channel: Channel - The channel to be targeted. Defaults to Channel.CH1.
-            current: float - The current to set in Amps
+            voltage: float - The voltage to set in Volts
+        
+        Raises:
+            UnimplementedOptionalMethod: If this device is not implemented
+            UnimplementedSafetyCriticalMethod: If the current limit is set >0.01A
+        
+        UnimplementedSafetyCriticalMethod 10mA Reasoning\n
+            If the user is trying to call set_ocp() and not set_current()
+            I will assume they are doing testing that requires a safety net
+            I don't know the working voltage so I have to look at the limits 
+            of preceptibale current on the human body...
+            According to OSHA "6 to 25mA (Women)" causes "Painful shocks. Loss of Muscular Control"
+            Its a by the bootstraps catch, you still won't be a happy camper if you
+            play pattycake with the wires at high voltage and an OCP of 10mA
+            NOTE - As always only trained professionals should be working on such systems
         '''
         self._check_channel_exists(channel)
         self._set_ocp(current, channel)
         return None
 
-    @abstractmethod
     def _set_ocp(self, current: float, channel: Channel) -> None:
         '''
-        Set the over current protection of the PSU on the specified channel.
-        NOTE - Many devices do not support this method.
+        Set the over current protection of the PSU on the specified channel.\n
+
+        If your device dos not support this method, do not overwrite the _set_ocp() method.\n
+        In this case the default implementation will raise an UnimplementedOptionalMethod warning.\n
 
         Parameters:
             channel: Channel - The channel to be targeted. Defaults to Channel.CH1.
-            current: float - The current to set in Amps
+            voltage: float - The voltage to set in Volts
+        
+        Raises:
+            UnimplementedOptionalMethod: If this device is not implemented
+            UnimplementedSafetyCriticalMethod: If the current limit is set >0.01A
+        
+        UnimplementedSafetyCriticalMethod 10mA Reasoning\n
+            If the user is trying to call set_ocp() and not set_current()
+            I will assume they are doing testing that requires a safety net
+            I don't know the working voltage so I have to look at the limits 
+            of preceptibale current on the human body...
+            According to OSHA "6 to 25mA (Women)" causes "Painful shocks. Loss of Muscular Control"
+            Its a by the bootstraps catch, you still won't be a happy camper if you
+            play pattycake with the wires at high voltage and an OCP of 10mA
+            NOTE - As always only trained professionals should be working on such systems
         '''
+        self._warn_unimplemented("set_ocp()")
+
+        if current > 0.01:
+            raise UnimplementedSafetyCriticalMethod("set_ocp()")
 
    # ========================= Debugging Method ==========================
     @final #TODO - Not done yet

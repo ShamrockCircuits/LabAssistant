@@ -99,12 +99,7 @@ class MAGNAPOWER_SL1000(GenericPSU): # pylint: disable=invalid-name
     def _get_voltage(self, channel: Channel = Channel.CH1) -> float:
         response = self.send_command("VOLT?", ReadWrite.READ)
         return self._safe_string_to_float(response)[0]
-
-    def _set_remote_sense(self, channel: Channel = Channel.CH1, state: State = State.ON) -> None:
-        # Use default docstring
-        self._warn_unimplemented("Set_Remote_Sense()")
-        return None
-   
+  
    # ================= Measure Methods =================
     def _measure(self, measure_type: MeasureType, channel: Channel = Channel.CH1) -> float:
         '''

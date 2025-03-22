@@ -85,11 +85,6 @@ class SIGLENT_SPD1168X(GenericPSU): # pylint: disable=invalid-name
         str_cmd = f"CH{channel.value}:VOLT?"
         response = self.send_command(str_cmd, ReadWrite.READ)
         return self._safe_string_to_float(response)[0]
-
-    def _set_remote_sense(self, channel: Channel = Channel.CH1, state: State = State.ON) -> None:
-        # Use default docstring
-        self._warn_unimplemented("Set_Remote_Sense()")
-        return None
    
    # ================= Measure Methods =================
     def _measure(self, measure_type: MeasureType, channel: Channel = Channel.CH1) -> float:
@@ -124,12 +119,8 @@ class SIGLENT_SPD1168X(GenericPSU): # pylint: disable=invalid-name
         return self._safe_string_to_float(response)[0]
     
    # =================== Protection ====================
-    def _set_ovp(self, voltage: float, channel: Channel) -> None:
-        self._warn_unimplemented("Set_OVP()")
-        return 
-
-    def _set_ocp(self, current: float, channel: Channel) -> None:
-        self._warn_unimplemented("Set_OCP()")
+   # Neither OCP or OVP is supported by this device
+   # Do not modify default implementations
 
 # DeviceRegistry.add(SIGLENT_SPD1168X.device_info)
 DeviceRegistry.add_class(SIGLENT_SPD1168X)
