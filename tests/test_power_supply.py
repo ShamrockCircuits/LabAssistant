@@ -306,11 +306,11 @@ def test_ocp(power_supply, capsys):
         with capsys.disabled():
             assert input(f"Verify {ch} OCP was set to 0.01A... (y/n)") == 'y', "Over current protection test failed."
 
-
 if __name__ == "__main__":
+
     pytest.main(["tests/test_power_supply.py", 
                  "--resource", "TCPIP::192.168.1.12::INSTR",
                  "--device", "siglent_spd1168x",    # Specify device to make test faster
-                 "-m" "manual_test",            # Filter remove manual tests
+                 "-m" "not manual_test",                # Filter remove manual tests
                  "-v"])                             # verbose flag
     
