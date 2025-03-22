@@ -111,6 +111,7 @@ class LabAssistant():
 
         # Check device matches our intended type
         if new_device.device_info.device_type != device_type:
+            device_connection.cleanup()
             raise DeviceInitializationError(message=f"Incorrect device type, {new_device.device_info.model} is a {new_device.device_info.device_type.value}, not an {device_type.value}")
         
         # Returned device should be safe to cast to the desired generic class

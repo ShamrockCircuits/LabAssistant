@@ -104,6 +104,7 @@ class DeviceConnection():
         if isinstance(self._visa_device_com, VisaDeviceConnection):
             self._visa_device = self._visa_device_com.device
 
+
     # Private Methods
     def _define_port(self, resource: str, connection_type: ConnectionType) -> str:
         """
@@ -165,6 +166,7 @@ class DeviceConnection():
         
         return VisaDeviceConnection(device)
 
+    # Public Methods
     def identify(self, id_cmd : Optional[str] = None) -> str:
         """
         Identify the device using all possible IDN commands. If a forced driver is set, that <IDN>
@@ -190,6 +192,7 @@ class DeviceConnection():
             
             # In the future we could return default devices for simualted hardware
             if forced_driver == "none":
+                self.cleanup()
                 raise ValueError("Simulated HW requires a forced driver to be set. What device should we simulate?")
             
             return forced_driver
@@ -248,10 +251,35 @@ class DeviceConnection():
         
         # Sanity check that (2) forced driver, matches the detected device
         if forced_driver != "none" and (forced_driver.lower() != manf_model.lower()):
+            self.cleanup()
             raise DeviceInitializationError(message = f"Forced driver {forced_driver} does not match detected device {manf_model}")
     
         return manf_model
     
+    def cleanup(self, message : Optional[str] = None) -> None:
+        '''
+        Closes visa device connection if it exists.
+
+        Parameters:
+            message (str): Printed to terminal "Cleanup Device --> {message}"
+        '''
+
+        # We will not cleanup simulated devices...
+        # Furthermore, we will not cleanup devices that are already closed.
+        # Confirm the user hasn't preemtively closed the device
+        if message is None:
+            message = self._info.resource
+
+        # Cleanup and close device
+        if self._visa_device is not None:
+            try:
+                self._visa_device.close()
+                print(f"Cleanup Device --> {message}")
+            
+            # Device already cleaned by user
+            except pyvisa.errors.InvalidSession:
+                pass
+
     def _reconnect(self) -> None:
         '''
         WARNING - This method is pretty untested... may be removed shortly
@@ -377,6 +405,7 @@ class GenericDevice(ABC):
         # Sanity check device is the type we expect...
         # This should only be possible if we Force the driver, but even then I think it would cause an errror
         if self.device_info.device_type != DeviceRegistry.get_device_info(self.device_info.manufacturer, self.device_info.model).device_type:
+            self.device_connection.cleanup()
             raise ValueError("Device type does not match the expected device type.")
     
     @final
@@ -385,24 +414,18 @@ class GenericDevice(ABC):
         Closes visa device connection if it exists.
         Class child class _cleanup method to ensure it ends in a safe state.
         '''
-
         # We will not cleanup simulated devices...
         # Furthermore, we will not cleanup devices that are already closed.
-
         # Confirm the user hasn't preemtively closed the device
 
-
         # Cleanup and close device
-        if self.device_connection._visa_device is not None:
+        try: 
+            self._cleanup()
+            self.device_connection.cleanup(f"{self.device_info.manufacturer} {self.device_info.model}")
 
-            try:
-                self._cleanup()
-                self.device_connection._visa_device.close()
-                print(f"Cleanup Device --> {self.device_info.manufacturer} {self.device_info.model}")
-            
-            # Device already cleaned by user
-            except pyvisa.errors.InvalidSession:
-                pass
+        # Device already cleaned by user
+        except pyvisa.errors.InvalidSession:
+            pass
 
     @abstractmethod
     def _cleanup(self) -> None:
@@ -478,27 +501,27 @@ class GenericDevice(ABC):
         warning_class = type(lab_assistant_warning).__name__
         print(f"Warning: {warning_class} -> {lab_assistant_warning.message}")
 
-    def _error_unimplemented(self, method_name: str, comment : str):
-        """
-        Warn the user that a method is not implemented. Call this if the missing implemenation is deamed safety critical.
+    # def _error_unimplemented(self, method_name: str, comment : str):
+    #     """
+    #     Warn the user that a method is not implemented. Call this if the missing implemenation is deamed safety critical.
 
-        Parameters:
-            method_name (str): The name of the unimplemented method.
-            comment (str): Extra comment added to error printout. Best to leave breadcrumbs.
+    #     Parameters:
+    #         method_name (str): The name of the unimplemented method.
+    #         comment (str): Extra comment added to error printout. Best to leave breadcrumbs.
 
-        Raises:
-            NotImplementedError
-        """
-        print("ERROR!!! Critical method not implemented", end="")
+    #     Raises:
+    #         NotImplementedError
+    #     """
+    #     print("ERROR!!! Critical method not implemented", end="")
 
-        # Print some dots to make it look like we're doing something
-        for i in range(5):
-            print(".", end="")
-            sleep(1)
-        print("\n")
+    #     # Print some dots to make it look like we're doing something
+    #     for i in range(5):
+    #         print(".", end="")
+    #         sleep(1)
+    #     print("\n")
 
-        raise NotImplementedError(f"The method '{method_name}' is not implemented for the device -> " + self.device_info.manufacturer + self.device_info.model + 
-                                  f"\n{comment}")
+    #     raise NotImplementedError(f"The method '{method_name}' is not implemented for the device -> " + self.device_info.manufacturer + self.device_info.model + 
+    #                               f"\n{comment}")
 
     def _check_channel_exists(self, channel : Union[list[Channel], Channel]) -> bool:
         '''
