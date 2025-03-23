@@ -65,7 +65,6 @@ class GenericEload(GenericDevice, ABC):
         Also does the following to all channels...
         1) Disables output
         2) Set mode to CR @10kOhm
-        3) Disable remote sense
         '''
         self._reset_device()
 
